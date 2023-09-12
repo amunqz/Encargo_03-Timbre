@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timbre Circular de Colores al Clic</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        canvas {
+            background-color: #fff;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const timbres = [];
+        const colors = ['#E3FF9E', '#D8E520', '#FAAF37', '#E35E27', '#FA96A5', '#B8FFC8'];
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        canvas.addEventListener('click', (e) => {
+            const x = e.clientX - canvas.getBoundingClientRect().left;
+            const y = e.clientY - canvas.getBoundingClientRect().top;
+            const radius = 50;
+            let currentColorIndex = 0;
+
+            const drawRing = () => {
+                ctx.beginPath();
+                ctx.arc(x, y, radius, 0, Math.PI * 2);
+                ctx.strokeStyle = colors[currentColorIndex];
+                ctx.lineWidth = 10;
+                ctx.stroke();
+
+                currentColorIndex = (currentColorIndex + 1) % colors.length;
+            };
+
+            const timbre = {
+                x,
+                y,
+                draw: drawRing,
+                startTime: Date.now()
+            };
+
+            timbres.push(timbre);
+
+            const animationInterval = setInterval(() => {
+                const elapsedTime = Date.now() - timbre.startTime;
+                if (elapsedTime >= 5000) {
+                    clearInterval(animationInterval);
+                    timbres.splice(timbres.indexOf(timbre), 1);
+                } else {
+                    drawRing();
+                }
+            }, 500);
+
+            // Dibuja todos los timbres existentes
+            timbres.forEach((existingTimbre) => existingTimbre.draw());
+        });
+    </script>
+</body>
+</html>
